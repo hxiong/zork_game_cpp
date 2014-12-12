@@ -12,10 +12,17 @@
 #include <cstdlib>
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
+// self defined libs
 #include "zork.h"
+#include "Room.h"
 
 using namespace std;
 using namespace rapidxml;
+
+vector<Room> rooms_arr; // a vectors stores rooms
+//	vector<Item> gItem;//global items, etc
+//	vector<Container> gCont;
+//	vector<Container> gCreat;
 
 int main(int argc, char *argv[]){
 
@@ -37,23 +44,35 @@ int main(int argc, char *argv[]){
 	//cout << "value size: "<< pRoot->value_size()<<endl;  // size is 0
 	MapTraverse(pRoot);
 
+	RoomPrintOut();
 	return 0;
 }
 
 /*
- * traverse the child nodes of map, like rooms, items, containers
+ * traverse the child nodes of map, like rooms, items, containers. these are top levels
  */
 void MapTraverse(xml_node<> *pRoot){
+	string nodeName;  // name of the node
+	string nodeValue;  // value of the node; may have no value
+	double valueSize=0;  // just to check whether this node has a value
+
+////	int rm_cnt = 1;
+
 	// pNode initialized to the first child of map;
 	for(xml_node<> *pNode = pRoot->first_node(); pNode; pNode=pNode->next_sibling()){
-			string nodeName = pNode->name();
-			string nodeValue = pNode->value();
-			double valueSize = pNode->value_size();
-			cout << "node name: "<< nodeName<<endl;
-			if(valueSize !=0) cout<<"node value: "<<nodeValue<<endl;
+
+			nodeName = pNode->name();
+
+			nodeValue = pNode->value();
+			valueSize = pNode->value_size(); // this node could have no value at all
+//			cout << "node name: "<< nodeName<<endl;
+//			if(valueSize !=0) cout<<"node value: "<<nodeValue<<endl;
+			// check if the current node pNode is room
 
 			if(nodeName == "room"){
-				RoomTraverse(pNode);
+////				 cout<<"*********************entering room"<<rm_cnt<<"***************"<<endl;
+				 RoomTraverse(pNode);
+////				 rm_cnt++;
 			}else if(nodeName == "item"){
 
 			}else if(nodeName == "container"){
@@ -67,23 +86,29 @@ void MapTraverse(xml_node<> *pRoot){
 
 /*
  * traverse the child nodes of room, like name, items, borders, containers
+ * fill in the room class with information
  */
 void RoomTraverse(xml_node<> *pRoom){
+	// create a room object, add room to the rooms array when this function returns;
+	Room room_obj;
+
 	// pNode initialized to the first child of room;
 	for(xml_node<> *pNode = pRoom->first_node(); pNode; pNode=pNode->next_sibling()){
+
 		string nodeName = pNode->name();
 		string nodeValue = pNode->value();
 		double valueSize = pNode->value_size();
 
-		cout << "  node name: "<< nodeName<<endl;
-		if(valueSize !=0) cout<<"  node value: "<<nodeValue<<endl;
+//		cout << "  node name: "<< nodeName<<endl;
+//		if(valueSize !=0) cout<<"  node value: "<<nodeValue<<endl;
 
-		if(nodeName == "name"){
-
-		}else if(nodeName == "description"){
-
-		}else if(nodeName == "item"){
-
+		if(nodeName == "name" && valueSize !=0){
+			room_obj.setName(nodeValue);  // set the name of this room
+		}else if(nodeName == "description" && valueSize != 0){
+			room_obj.setDescript(nodeValue); // set room description
+		}else if(nodeName == "item" && valueSize !=0){
+			// add item(a name) to the items array in this room
+			room_obj.addItem(nodeValue);
 		}else if(nodeName == "trigger"){
 
 		}else if(nodeName == "border"){
@@ -93,7 +118,33 @@ void RoomTraverse(xml_node<> *pRoom){
 		}else if(nodeName == "creature"){
 
 		}
+
 	}
+
+	// add this room to rooms_arr
+	rooms_arr.push_back(room_obj);
+
 	return;
+}
+
+void RoomPrintOut(){
+	for (vector<Room>::iterator i = rooms_arr.begin(); i != rooms_arr.end(); ++i)
+	{
+		cout << "**************************************"<<endl;
+		// print room name and description
+		cout<<"room name: "<< i->getName()<<endl;
+		cout<<"room description: "<< i->getDescript()<<endl;
+
+		// print for items array
+		if(i->getItems().size() != 0){
+			int size = i->getItems().size();
+			vector<string> items=i->getItems();
+
+			for(int j=0; j < size; j++){
+				cout << "item name: " << items[j] << endl;
+			}
+		}
+
+	}
 }
 
