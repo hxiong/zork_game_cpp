@@ -50,8 +50,11 @@ int main(int argc, char *argv[]){
 	// print out room for testing purpose
 	RoomPrintOut();
 
+	gamePlay();
 	return 0;
 }
+
+
 
 /*
  * traverse the child nodes of map, like rooms, items, containers. these are top levels
@@ -224,3 +227,99 @@ void RoomPrintOut(){
 	} // end for
 }
 
+void gamePlay(){
+	string gameStatus = "UPDATE";  // return value from gameUpdate, tells what's next game status
+	int next_rm_ind = 0; // tells what next room index to send to update game
+	int cur_rm_ind = 0;
+
+	// give user room description
+	cout <<rooms_arr[cur_rm_ind].getDescript()<<endl;
+
+//	// initial game starts
+//	pair<string, int> feedback = gameUpdate(cur_rm_ind);
+
+	// game update,
+	while (gameStatus == "UPDATE") {
+		pair<string, int> feedback = gameUpdate(cur_rm_ind);
+		next_rm_ind = feedback.second;
+		gameStatus = feedback.first;
+		cur_rm_ind = next_rm_ind;
+	}
+	return;
+} // end gameplay
+
+
+pair<string,int> gameUpdate(int cur_rm_ind){
+	string usr_in;
+	int input_vali = 0; // flag for input validity
+	pair<string, int> feedback;
+
+	cout<<"enter gameUpdate -----------------"<<endl;
+	cout << "room name: "<<rooms_arr[cur_rm_ind].getName()<<endl;
+	cout << "room type: "<<rooms_arr[cur_rm_ind].getRoomType()<<endl;
+
+	getline(cin,usr_in);
+	cout<<"user input: "<<usr_in<<endl;
+
+////if(usr_in == "open exit") cout<< "what the heack/................"<<endl;
+
+	// check user input
+	if((usr_in =="n") || (usr_in =="s") || (usr_in=="e") || (usr_in=="w")){
+		map<string,string> borders_mp = rooms_arr[cur_rm_ind].getBordersMp();
+
+		// search for matching borders
+		for(map<string,string>::iterator b=borders_mp.begin(); b != borders_mp.end(); ++b){
+			string border_dir = b->first; // border directions
+			if(border_dir[0] == usr_in[0]){
+				// find the correct room
+				int new_rm_ind = findInGivenVector(b->second);
+				//update room index
+				cur_rm_ind = new_rm_ind;
+				// update the input validity
+				input_vali = 1;
+				break;
+			}
+		} // end for
+
+		// if usr in doesn't match border direction
+		if(input_vali == 0){
+			cout<< "Can't go that way "<<endl;
+			feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+		}else if (input_vali == 1){
+			// print out new room description, go to the new room
+			cout <<rooms_arr[cur_rm_ind].getDescript()<<endl;
+			feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+		}
+
+	} // end if
+	else if(usr_in == "open exit"){
+	////	cout<<"*************"<<endl;
+	//	bool exit_flag=false;
+		if (processOpenExit(cur_rm_ind)){
+			cout<<"Game Over"<<endl;
+			feedback.first = "ENDS";
+		}else{
+			cout<<"can't find exit, enter another command !"<<endl;
+			feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+		}
+	}
+
+	return feedback;
+}
+
+bool processOpenExit(int rm_ind){
+	string room_type = rooms_arr[rm_ind].getRoomType();
+	if(room_type == "exit"){
+		return true;
+	}else return false;
+}
+
+int findInGivenVector(string label){
+	int room_ind;
+	for(int i=0; i<rooms_arr.size(); i++){
+		if (rooms_arr[i].getName() == label){
+			room_ind = i;
+		}
+	}
+	return room_ind;
+}
