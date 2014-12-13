@@ -41,10 +41,12 @@ int main(int argc, char *argv[]){
 	// access the dom tree
 	cout << "Name of my first node is: " << doc.first_node()->name() << "\n";
 	xml_node<> *pRoot = doc.first_node();
-	//cout << "value size: "<< pRoot->value_size()<<endl;  // size is 0
+	//// cout << "value size: "<< pRoot->value_size()<<endl;  // size is 0
 	MapTraverse(pRoot);
 
+	// print out room for testing purpose
 	RoomPrintOut();
+
 	return 0;
 }
 
@@ -92,6 +94,10 @@ void RoomTraverse(xml_node<> *pRoom){
 	// create a room object, add room to the rooms array when this function returns;
 	Room room_obj;
 
+//	room_obj.addBorder("north","somewhere");
+//	map<string,string> borders=room_obj.getBordersMp();
+//	cout<<"border is: "<<borders.find("north")->second <<endl;
+
 	// pNode initialized to the first child of room;
 	for(xml_node<> *pNode = pRoom->first_node(); pNode; pNode=pNode->next_sibling()){
 
@@ -112,6 +118,14 @@ void RoomTraverse(xml_node<> *pRoom){
 		}else if(nodeName == "trigger"){
 
 		}else if(nodeName == "border"){
+			// get border direction and name of the adjacent room
+			xml_node<> *pDirect = pNode->first_node();
+			xml_node<> *pBorderName = pDirect->next_sibling();
+			string direction = pDirect->value();
+			string border_name = pBorderName->value();
+			room_obj.addBorder(direction,border_name);
+
+		////	cout <<"border direct "<< direction <<" name: "<< border_name << endl;
 
 		}else if(nodeName == "container"){
 
@@ -145,6 +159,12 @@ void RoomPrintOut(){
 			}
 		}
 
+		// print out borders
+		map<string,string> borders_mp = i->getBordersMp();
+		map<string,string>::iterator it;
+		for (it=borders_mp.begin(); it!=borders_mp.end(); ++it) {
+		    std::cout << it->first << " => " << it->second << '\n';
+		}
 	}
 }
 

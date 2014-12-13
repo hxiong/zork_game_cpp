@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include "core.hpp"
 
 using namespace std;
@@ -23,6 +24,7 @@ private:
 	string room_description;
 	string room_type;
 	vector<string> items;
+	map<string, string> borders_mp; // stores info <direction,name> for all borders of this room
 
 	//	vector<Container> cont;
 	//	vector<Item> item;
@@ -38,10 +40,13 @@ public:
 	string getStatus(); // getter
 	string getDescript();
 	vector<string> getItems();
+	map<string,string> getBordersMp();
 
-	//add item to items array
+	// add item to items array
 	void addItem(string i);
 
+	// fill border in the borders map
+	void addBorder(string d, string n);
 };
 
 #endif
