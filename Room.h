@@ -32,13 +32,16 @@ private:
 	//	Room(string o) : Triggerable(o)
 public:
 	Room(); // constructor
+
 	void setName(string n); // set room name
 	void setStatus(string n); // setter
 	void setDescript(string d);
+	void setRoomType(string t);
 
 	string getName();  // get room name
 	string getStatus(); // getter
 	string getDescript();
+	string getRoomType();
 	vector<string> getItems();
 	map<string,string> getBordersMp();
 

@@ -94,10 +94,6 @@ void RoomTraverse(xml_node<> *pRoom){
 	// create a room object, add room to the rooms array when this function returns;
 	Room room_obj;
 
-//	room_obj.addBorder("north","somewhere");
-//	map<string,string> borders=room_obj.getBordersMp();
-//	cout<<"border is: "<<borders.find("north")->second <<endl;
-
 	// pNode initialized to the first child of room;
 	for(xml_node<> *pNode = pRoom->first_node(); pNode; pNode=pNode->next_sibling()){
 
@@ -115,7 +111,11 @@ void RoomTraverse(xml_node<> *pRoom){
 		}else if(nodeName == "item" && valueSize !=0){
 			// add item(a name) to the items array in this room
 			room_obj.addItem(nodeValue);
-		}else if(nodeName == "trigger"){
+		}else if(nodeName == "type" && valueSize != 0){
+			// add room type
+			room_obj.setRoomType(nodeValue);
+		}
+		else if(nodeName == "trigger"){
 
 		}else if(nodeName == "border"){
 			// get border direction and name of the adjacent room
@@ -165,6 +165,9 @@ void RoomPrintOut(){
 		for (it=borders_mp.begin(); it!=borders_mp.end(); ++it) {
 		    std::cout << it->first << " => " << it->second << '\n';
 		}
+
+		// print out room type
+		cout << "room type => "<<i->getRoomType()<<endl;
 	}
 }
 
