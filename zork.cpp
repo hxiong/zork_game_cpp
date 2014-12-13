@@ -249,10 +249,16 @@ void gamePlay(){
 } // end gameplay
 
 
+/*
+ *  loop over the game plays depends on the user input
+ */
 pair<string,int> gameUpdate(int cur_rm_ind){
 	string usr_in;
 	int input_vali = 0; // flag for input validity
 	pair<string, int> feedback;
+
+	string delim = " ";
+	string act_n; // action name, as take, drop
 
 	cout<<"enter gameUpdate -----------------"<<endl;
 	cout << "room name: "<<rooms_arr[cur_rm_ind].getName()<<endl;
@@ -260,8 +266,10 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 
 	getline(cin,usr_in);
 	cout<<"user input: "<<usr_in<<endl;
+	act_n = usr_in.substr(0,usr_in.find(delim));
 
 ////if(usr_in == "open exit") cout<< "what the heack/................"<<endl;
+
 
 	// check user input
 	if((usr_in =="n") || (usr_in =="s") || (usr_in=="e") || (usr_in=="w")){
@@ -294,7 +302,6 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 	} // end if
 	else if(usr_in == "open exit"){
 	////	cout<<"*************"<<endl;
-	//	bool exit_flag=false;
 		if (processOpenExit(cur_rm_ind)){
 			cout<<"Game Over"<<endl;
 			feedback.first = "ENDS";
@@ -303,9 +310,51 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 			feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
 		}
 	}
+	else if(act_n == "take" || act_n == "drop"){
+		processItemTD(cur_rm_ind,usr_in);
+		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+	}
 
 	return feedback;
 }
+
+//TODO assumed one room has one item only
+void processItemTD(int cur_rm_ind, string usr_in){
+	// dissect usr input, get the item name
+	bool item_dropped=false;
+	string delim = " ";
+	string item_n = usr_in.substr(usr_in.find(delim)+1);  // item name from user
+	string act_n = usr_in.substr(0,usr_in.find(delim));
+
+	cout<<"action to take: "<<act_n<<endl;
+
+	// check if the room has an item
+	vector<string> items = rooms_arr[cur_rm_ind].getItems();
+	Room room_obj = rooms_arr[cur_rm_ind];
+
+	if(act_n == "take"){
+		if(items.size() == 0) cout<< "no item found in this room"<<endl;
+		else{
+			for(vector<Item>::iterator i=items_arr.begin(); i != items_arr.end(); ++i){
+				if(i->getName() == item_n) {
+					i->setOwnerShip("inventory");
+					cout<<"Item "<<i->getName()<<" added to inventory"<<endl;
+				}
+			}
+		}
+	}
+	else if(act_n == "drop"){
+		for(vector<Item>::iterator i=items_arr.begin(); i != items_arr.end(); ++i){
+			if(i->getName() == item_n && i->getOwnerShip() == "inventory"){
+				i->setOwnerShip(room_obj.getName());
+				cout<<item_n <<" dropped"<<endl;
+				item_dropped = true;
+			}
+		}
+		if(item_dropped == false) cout<<"item not in your inventory or item not found"<<endl;
+	}
+}
+
 
 bool processOpenExit(int rm_ind){
 	string room_type = rooms_arr[rm_ind].getRoomType();

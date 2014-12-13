@@ -18,7 +18,9 @@ using namespace std;
 
 // setter
 void Item::setWriting(string w) { writing = w;}
+void Item::setOwnerShip(string o) { ownership = o;}
 
 
 // getter
 string Item::getWriting() { return writing;}
+string Item::getOwnerShip() { return ownership;}
