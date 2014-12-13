@@ -18,13 +18,13 @@ using namespace std;
 Room::Room() {room_name=""; room_status="";}
 
 // setters
-void Room::setName(string n) {room_name=n;}
+void Room:: setName(string n) {room_name=n;}
 void Room::setStatus(string s) {room_status=s;}
 void Room::setDescript(string d) {room_description=d;}
 void Room::setRoomType(string t) {room_type=t;}
 
 // getters
-string Room::getName() {return room_name;}
+string Room:: getName() {return room_name;}
 string Room::getStatus() {return room_status;}
 string Room::getDescript() {return room_description;}
 string Room::getRoomType() {return room_type;}

@@ -18,7 +18,7 @@ using namespace std;
 //};
 
 class Room {
-private:
+protected:
 	string room_name;
 	string room_status;
 	string room_description;

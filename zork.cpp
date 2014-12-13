@@ -12,15 +12,18 @@
 #include <cstdlib>
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
+
 // self defined libs
 #include "zork.h"
 #include "Room.h"
+#include "Item.h"
 
 using namespace std;
 using namespace rapidxml;
 
 vector<Room> rooms_arr; // a vectors stores rooms
-//	vector<Item> gItem;//global items, etc
+vector<Item> items_arr; // items
+
 //	vector<Container> gCont;
 //	vector<Container> gCreat;
 
@@ -76,6 +79,7 @@ void MapTraverse(xml_node<> *pRoot){
 				 RoomTraverse(pNode);
 ////				 rm_cnt++;
 			}else if(nodeName == "item"){
+				ItemTraverse(pNode);
 
 			}else if(nodeName == "container"){
 
@@ -85,6 +89,40 @@ void MapTraverse(xml_node<> *pRoot){
 		}
 	return;
 }
+
+/*
+ * traverse the child nodes of item, like name, turn-on, writing etc
+ * fill in the item object with information
+ */
+void ItemTraverse(xml_node<> *pItem){
+	// create an item object, add this item to the items array when this function returns;
+	Item item_obj;
+
+	// pNode initialized to the first child of item;
+	for(xml_node<> *pNode = pItem->first_node(); pNode; pNode = pNode->next_sibling()){
+
+		string nodeName = pNode->name(); // name of this node : </name>
+		string nodeValue = pNode->value(); // value of this node: the thing after </name>
+		double valueSize = pNode->value_size();
+
+		if(nodeName == "name" && valueSize !=0){
+			item_obj.setName(nodeValue);  // set the name of this room
+		}else if(nodeName == "description" && valueSize != 0){
+			item_obj.setDescript(nodeValue); // set room description
+		}else if(nodeName == "status" && valueSize != 0){
+			item_obj.setStatus(nodeValue);
+		}else if(nodeName == "writing" && valueSize != 0){
+			item_obj.setWriting(nodeValue);
+		}
+
+	} // end for loop
+
+	// add this room to rooms_arr
+	items_arr.push_back(item_obj);
+
+	return;
+} // end func
+
 
 /*
  * traverse the child nodes of room, like name, items, borders, containers
@@ -133,15 +171,16 @@ void RoomTraverse(xml_node<> *pRoom){
 
 		}
 
-	}
+	} // end for loop
 
 	// add this room to rooms_arr
 	rooms_arr.push_back(room_obj);
 
 	return;
-}
+} // end func
 
 void RoomPrintOut(){
+	// print rooms
 	for (vector<Room>::iterator i = rooms_arr.begin(); i != rooms_arr.end(); ++i)
 	{
 		cout << "**************************************"<<endl;
@@ -168,6 +207,20 @@ void RoomPrintOut(){
 
 		// print out room type
 		cout << "room type => "<<i->getRoomType()<<endl;
-	}
+
+		// print out items
+//		Item item;
+//		item.setName("halo");
+//		cout << "item name => " << item.getName()<<endl;
+	} // end for
+
+	// print items
+	for(vector<Item>::iterator it=items_arr.begin(); it !=items_arr.end(); ++it){
+		cout << "============================="<<endl;
+		cout << "item name => " << it->getName()<<endl;
+		cout<<"item writing => " << it->getWriting()<<endl;
+		cout<<"item status => " << it->getStatus() <<endl;
+
+	} // end for
 }
 
