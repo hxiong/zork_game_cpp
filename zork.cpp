@@ -128,6 +128,9 @@ void ContainerTraverse(xml_node<> *pContainer){
 			container_obj.setStatus(nodeValue);
 		}else if(nodeName == "item" && valueSize != 0){
 			container_obj.addItem(nodeValue);
+		}else if(nodeName == "accept" && valueSize != 0){
+			container_obj.addAccept(nodeValue);
+			container_obj.setLockAcquired(false);
 		}
 	} // end for loop
 
@@ -399,14 +402,100 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 		processOpen(cur_rm_ind,usr_in_vect);
 		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
 	}
+	else if(usr_in_vect[0] == "put"){
+		// put items in container
+		processPutItem(usr_in_vect);
+		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+	}
 
 	return feedback;
 }
 
+void processPutItem(vector<string> usr_in_vect){
+	bool has_accept = false;
+	bool added=false;
+	Item * pItem;
+	Container *pContainer; // a reference to a found container;
+	vector<string> accepts_arr;
+
+	// check if input is valid
+	if(usr_in_vect.size() != 4) { cout<<"wrong input !!!"; return;}
+
+	string container_n = usr_in_vect[3]; // container name to put item in
+	string item_n = usr_in_vect[1]; // item name to put in c
+
+	// check if container has specific accept;
+	for(vector<Container>::iterator it=containers_arr.begin(); it!=containers_arr.end(); ++it){
+		if(container_n == it->getName()){
+			pContainer = &(*it);
+			if(it->getAccepts().size() != 0) has_accept=true;
+			accepts_arr = it->getAccepts();
+			break;
+		}
+	}
+	// if do, only the accept item can be put in
+	// if not, put this item in
+	if(has_accept){
+		for(vector<string>::iterator s=accepts_arr.begin(); s!=accepts_arr.end(); ++s){
+			if(item_n == *s){
+				// add item to container;
+				pContainer->addItem(*s);
+				pItem = fetchItem(item_n);
+				pItem->setOwnerShip(pContainer->getName());
+				cout<<"Item "<<item_n<<" added to "<<container_n<<endl;
+				added=true;
+				pContainer->setLockAcquired(true);
+				break;
+			}
+		}
+	}else{
+		pContainer->addItem(item_n);
+		pItem = fetchItem(item_n);
+		pItem->setOwnerShip(pContainer->getName());
+		cout<<"Item "<<item_n<<" added to "<<container_n<<endl;
+		added=true;
+	}
+
+	if(added == false) cout<<"item can not be added to container !"<<endl;
+}
+
+
+// return a pointer to a specific item in items_arr array
+Item * fetchItem(string item_n){
+	Item * pItem;
+	for(vector<Item>::iterator it=items_arr.begin(); it!=items_arr.end(); ++it){
+		if(it->getName() == item_n) {
+			pItem = &(*it);
+			break;
+		}
+	}
+	return pItem;
+}
+
+Container * fetchContainer(string ct_n){
+	Container * pContainer;
+	for(vector<Container>::iterator it=containers_arr.begin(); it!=containers_arr.end(); ++it){
+		if(it->getName() == ct_n) {
+			pContainer = &(*it);
+			break;
+		}
+	}
+	return pContainer;
+}
+
 void processOpen(int cur_rm_id, vector<string> usr_in_vect){
     bool opened = false;
+    Container * pContainer;
 
 	string c_name = usr_in_vect[1]; // container name
+
+	pContainer = fetchContainer(c_name);
+	// if specific accept item not inserted, can not open the container
+	if(pContainer != NULL && pContainer->getLockAcquired() == false){
+		cout<<"can not open the container, need accept item !"<<endl;
+		return;
+	}
+
 	for(vector<Container>:: iterator c=containers_arr.begin(); c!=containers_arr.end(); ++c){
 		if(c->getName() == c_name && c->getItems().size() !=0){
 			cout<<c_name<<" contains ";
@@ -488,7 +577,7 @@ void processItemTD(int cur_rm_ind, string usr_in){
 	string item_n = usr_in.substr(usr_in.find(delim)+1);  // item name from user
 	string act_n = usr_in.substr(0,usr_in.find(delim));
 
-	cout<<"action to take: "<<act_n<<endl;
+	//// cout<<"action to take: "<<act_n<<endl;
 
 	// check if the room has an item
 	vector<string> items = rooms_arr[cur_rm_ind].getItems();

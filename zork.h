@@ -18,17 +18,24 @@ void ContainerTraverse(xml_node<> *);
 void gamePlay();
 pair<string,int> gameUpdate(int room_index);
 int findInGivenVector(string);  // find desired room or item, return the index
+
 bool processOpenExit(int); // process user input 'open exit'
 void processItemTD(int, string); // take or drop item process
 void processOpen(int, vector<string>);  // open containers
+
 void readItem(int, string); // read writing process
+
 void processTurnOn(int, vector<string>); // process user input 'turn on'
+void processPutItem(vector<string>);
 
 void takeAvailableItems();
 
 void split(const string&, char, vector<string>&); // self defined function to split a string; outputs a vector
 
 void RoomPrintOut();
+
+Item * fetchItem(string); // return the pointer to specific item in the items_arr
+Container * fetchContainer(string); // return the pointer to a specific container in the containers_arr
 
 // void executeAction(vector<Item>::iterator i);
 void execContainer(Item& pC);

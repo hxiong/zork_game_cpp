@@ -10,7 +10,7 @@ using namespace std;
 
 class Container {
 protected:
-	bool lock_acquired = false;  // will block the container to be opened until one of the accept is inserted
+	bool lock_acquired;  // will block the container to be opened until one of the accept is inserted
 
 	string container_name;
 	string container_status;
@@ -22,6 +22,10 @@ protected:
 	vector<string> accepts;
 
 public:
+	Container(){
+		if(accepts.size() == 0) lock_acquired = true;
+		else lock_acquired = false;
+	}
 
 	void setName(string n); // set container name
 	void setStatus(string n); // setter
