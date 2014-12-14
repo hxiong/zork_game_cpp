@@ -10,6 +10,7 @@ using namespace std;
 void MapTraverse(xml_node<> *); // traverse the child nodes of "map"
 void RoomTraverse(xml_node<> *);  // traverse the child nodes of "room"
 void ItemTraverse(xml_node<> *);
+void ContainerTraverse(xml_node<> *);
 
 void gamePlay();
 pair<string,int> gameUpdate(int room_index);

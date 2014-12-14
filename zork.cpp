@@ -18,12 +18,14 @@
 #include "zork.h"
 #include "Room.h"
 #include "Item.h"
+#include "Container.h"
 
 using namespace std;
 using namespace rapidxml;
 
 vector<Room> rooms_arr; // a vectors stores rooms
 vector<Item> items_arr; // items
+vector<Container> containers_arr; // containers
 
 //	vector<Container> gCont;
 //	vector<Container> gCreat;
@@ -84,15 +86,41 @@ void MapTraverse(xml_node<> *pRoot){
 ////				 rm_cnt++;
 			}else if(nodeName == "item"){
 				ItemTraverse(pNode);
-
 			}else if(nodeName == "container"){
-
+				ContainerTraverse(pNode);
 			}else if(nodeName == "creature"){
 
 			}
 		}
 	return;
 }
+
+
+void ContainerTraverse(xml_node<> *pContainer){
+	// create an item object, add this item to the items array when this function returns;
+	Container container_obj;
+
+	// pNode initialized to the first child of item;
+	for(xml_node<> *pNode = pContainer->first_node(); pNode; pNode = pNode->next_sibling()){
+
+		string nodeName = pNode->name(); // name of this node : </name>
+		string nodeValue = pNode->value(); // value of this node: the thing after </name>
+		double valueSize = pNode->value_size();
+
+		if(nodeName == "name" && valueSize !=0){
+			container_obj.setName(nodeValue);  // set the name of this room
+		}else if(nodeName == "description" && valueSize != 0){
+			container_obj.setDescript(nodeValue); // set room description
+		}else if(nodeName == "status" && valueSize != 0){
+			container_obj.setStatus(nodeValue);
+		}
+	} // end for loop
+
+	// add this room to rooms_arr
+	containers_arr.push_back(container_obj);
+	return;
+} // end func
+
 
 /*
  * traverse the child nodes of item, like name, turn-on, writing etc
@@ -176,8 +204,9 @@ void RoomTraverse(xml_node<> *pRoom){
 
 		////	cout <<"border direct "<< direction <<" name: "<< border_name << endl;
 
-		}else if(nodeName == "container"){
-
+		}else if(nodeName == "container" && valueSize !=0){
+			// add container name to the container array in this room
+			room_obj.addContainer(nodeValue);
 		}else if(nodeName == "creature"){
 
 		}
@@ -233,6 +262,13 @@ void RoomPrintOut(){
 		cout<<"item status => " << it->getStatus() <<endl;
 		cout<<"item turn on, print=>"<<it->getTurnOn().first<<" action=>"<<it->getTurnOn().second<<endl;
 
+	} // end for
+
+	// print containers
+	for(vector<Container>::iterator c=containers_arr.begin(); c !=containers_arr.end(); ++c){
+		cout << "------------------------------>"<<endl;
+		cout << "container name => " << c->getName()<<endl;
+		cout<<"c status => " << c->getStatus() <<endl;
 	} // end for
 }
 

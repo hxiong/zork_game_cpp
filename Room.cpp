@@ -36,6 +36,11 @@ void Room::addItem(string item){
 	items.push_back(item);
 }
 
+// add container to container array
+void Room::addContainer(string c){
+	containers.push_back(c);
+}
+
 // add border to border map
 void Room::addBorder(string direction, string name){
 	borders_mp.insert(pair<string,string>(direction, name));
