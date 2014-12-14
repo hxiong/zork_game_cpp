@@ -45,13 +45,13 @@ int main(int argc, char *argv[]){
 	doc.parse<0>(xmlFile.data());
 
 	// access the dom tree
-	cout << "Name of my first node is: " << doc.first_node()->name() << "\n";
+//	cout << "Name of my first node is: " << doc.first_node()->name() << "\n";
 	xml_node<> *pRoot = doc.first_node();
 	//// cout << "value size: "<< pRoot->value_size()<<endl;  // size is 0
 	MapTraverse(pRoot);
 
 	// print out room for testing purpose
-	RoomPrintOut();
+//	RoomPrintOut();
 
 	gamePlay();
 	return 0;
@@ -113,6 +113,8 @@ void ContainerTraverse(xml_node<> *pContainer){
 			container_obj.setDescript(nodeValue); // set room description
 		}else if(nodeName == "status" && valueSize != 0){
 			container_obj.setStatus(nodeValue);
+		}else if(nodeName == "item" && valueSize != 0){
+			container_obj.addItem(nodeValue);
 		}
 	} // end for loop
 
@@ -306,12 +308,12 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 	string delim = " ";
 	string act_n; // action name, as take, drop
 
-	cout<<"enter gameUpdate -----------------"<<endl;
-	cout << "room name: "<<rooms_arr[cur_rm_ind].getName()<<endl;
-	cout << "room type: "<<rooms_arr[cur_rm_ind].getRoomType()<<endl;
+	//// cout<<"enter gameUpdate -----------------"<<endl;
+/// 	cout << "room name: "<<rooms_arr[cur_rm_ind].getName()<<endl;
+////	cout << "room type: "<<rooms_arr[cur_rm_ind].getRoomType()<<endl;
 
 	getline(cin,usr_in);
-	cout<<"user input: "<<usr_in<<endl;
+////	cout<<"user input: "<<usr_in<<endl;
 	act_n = usr_in.substr(0,usr_in.find(delim));
 
 	// split input string
@@ -372,8 +374,30 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 		processTurnOn(cur_rm_ind, usr_in_vect);
 		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
 	}
+	// input is open(container)
+	else if(usr_in_vect[0] == "open" && usr_in_vect[1] != "exit"){
+		processOpen(cur_rm_ind,usr_in_vect);
+		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+	}
 
 	return feedback;
+}
+
+void processOpen(int cur_rm_id, vector<string> usr_in_vect){
+
+	string c_name = usr_in_vect[1]; // container name
+	for(vector<Container>:: iterator c=containers_arr.begin(); c!=containers_arr.end(); ++c){
+		if(c->getName() == c_name && c->getItems().size() !=0){
+			cout<<c_name<<" contains";
+			vector<string> items=c->getItems();
+			for(int k=0; k<items.size(); k++){
+				string item_n = items[k];
+				cout<<item_n;
+			}
+			cout<<endl;
+		}else cout<<"container is empty"<<endl;
+
+	}
 }
 
 void processTurnOn(int cur_rm_ind, vector<string> usr_in_vect){
