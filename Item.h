@@ -7,15 +7,18 @@ class Item : public Room {
 protected:
 	string ownership = "NONINVENT"; // who owns the item, initially not inventory
 	string writing;
+	pair<string, string> turnon; // turn on pair, contains <print, action>
 public:
 
 	//setter
 	void setWriting(string w);
 	void setOwnerShip(string o);
+	void setTurnOn(string, string);
 
 	//getter
 	string getWriting();
 	string getOwnerShip();
+	pair<string, string> getTurnOn();
 
 };
 

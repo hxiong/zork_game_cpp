@@ -17,6 +17,7 @@ int findInGivenVector(string);  // find desired room or item, return the index
 bool processOpenExit(int); // process user input 'open exit'
 void processItemTD(int, string); // take or drop item process
 void readItem(int, string); // read writing process
+void processTurnOn(int, vector<string>); // process user input 'turn on'
 
 void split(const string&, char, vector<string>&); // self defined function to split a string; outputs a vector
 void RoomPrintOut();

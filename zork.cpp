@@ -117,6 +117,13 @@ void ItemTraverse(xml_node<> *pItem){
 			item_obj.setStatus(nodeValue);
 		}else if(nodeName == "writing" && valueSize != 0){
 			item_obj.setWriting(nodeValue);
+		}else if(nodeName == "turnon" && pNode->first_node()){
+			// get the print and action under turnon node
+			xml_node<> *pPrint = pNode->first_node();
+			xml_node<> *pAction = pPrint->next_sibling();
+			string print_str = pPrint->value();
+			string action_str = pAction->value();
+			item_obj.setTurnOn(print_str,action_str);
 		}
 
 	} // end for loop
@@ -224,6 +231,7 @@ void RoomPrintOut(){
 		cout << "item name => " << it->getName()<<endl;
 		cout<<"item writing => " << it->getWriting()<<endl;
 		cout<<"item status => " << it->getStatus() <<endl;
+		cout<<"item turn on, print=>"<<it->getTurnOn().first<<" action=>"<<it->getTurnOn().second<<endl;
 
 	} // end for
 }
@@ -255,6 +263,7 @@ void gamePlay(){
  */
 pair<string,int> gameUpdate(int cur_rm_ind){
 	string usr_in;
+	vector<string> usr_in_vect;  // user input parsed into a vector
 	int input_vali = 0; // flag for input validity
 	pair<string, int> feedback;
 
@@ -268,6 +277,9 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 	getline(cin,usr_in);
 	cout<<"user input: "<<usr_in<<endl;
 	act_n = usr_in.substr(0,usr_in.find(delim));
+
+	// split input string
+	split(usr_in,' ',usr_in_vect);
 
 ////if(usr_in == "open exit") cout<< "what the heack/................"<<endl;
 
@@ -319,8 +331,34 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 		readItem(cur_rm_ind, usr_in);
 		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
 	}
+	// input is turn on command
+	else if(usr_in_vect[0] == "turn" && usr_in_vect[1] == "on"){
+		processTurnOn(cur_rm_ind, usr_in_vect);
+		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+	}
 
 	return feedback;
+}
+
+void processTurnOn(int cur_rm_ind, vector<string> usr_in_vect){
+	pair<string, string> turnon;
+	bool item_on = false;
+	string item_n = *(usr_in_vect.end()-1);
+	string action_str;
+	for(vector<Item>::iterator i=items_arr.begin(); i != items_arr.end(); ++i){
+		if((i->getName() == item_n) && (i->getOwnerShip() == "inventory")) {
+			cout<<"You activate the "<<item_n<<endl;
+			turnon = i->getTurnOn();
+			if((turnon.first.empty())) cout<<"Nothing to print for turnon of this item"<<endl;
+			else {
+				cout<<turnon.first<<endl;
+				//TODO executeAction();
+				item_on=true;
+			}
+		}
+	}
+	if(item_on == false) cout<<"item not in your inventory or there was nothing to printout"<<endl;
+	return;
 }
 
 /*
