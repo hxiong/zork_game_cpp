@@ -384,20 +384,22 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 }
 
 void processOpen(int cur_rm_id, vector<string> usr_in_vect){
+    bool opened = false;
 
 	string c_name = usr_in_vect[1]; // container name
 	for(vector<Container>:: iterator c=containers_arr.begin(); c!=containers_arr.end(); ++c){
 		if(c->getName() == c_name && c->getItems().size() !=0){
-			cout<<c_name<<" contains";
+			cout<<c_name<<" contains ";
 			vector<string> items=c->getItems();
 			for(int k=0; k<items.size(); k++){
 				string item_n = items[k];
 				cout<<item_n;
 			}
 			cout<<endl;
-		}else cout<<"container is empty"<<endl;
-
+			opened = true;
+		}
 	}
+	if(opened == false) cout<<"container is empty"<<endl;
 }
 
 void processTurnOn(int cur_rm_ind, vector<string> usr_in_vect){
