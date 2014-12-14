@@ -1,3 +1,5 @@
+#ifndef ITEM_H
+#define ITEM_H
 #include "Room.h"
 
 using namespace std;
@@ -21,6 +23,8 @@ public:
 	pair<string, string> getTurnOn();
 
 };
+
+#endif
 
 //struct Item : Triggerable
 //{

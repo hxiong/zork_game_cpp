@@ -4,6 +4,9 @@
 #include "rapidxml_utils.hpp"
 #include <string>
 
+#include "Container.h"
+#include "Item.h"
+
 using namespace rapidxml;
 using namespace std;
 
@@ -21,9 +24,13 @@ void processOpen(int, vector<string>);  // open containers
 void readItem(int, string); // read writing process
 void processTurnOn(int, vector<string>); // process user input 'turn on'
 
+void takeAvailableItems();
+
 void split(const string&, char, vector<string>&); // self defined function to split a string; outputs a vector
+
 void RoomPrintOut();
 
 // void executeAction(vector<Item>::iterator i);
-
+void execContainer(Item& pC);
+void exec2(Item *pC);
 #endif

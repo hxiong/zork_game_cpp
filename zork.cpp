@@ -27,6 +27,8 @@ vector<Room> rooms_arr; // a vectors stores rooms
 vector<Item> items_arr; // items
 vector<Container> containers_arr; // containers
 
+vector<string> available_items; // items you can take, prepared from container
+
 //	vector<Container> gCont;
 //	vector<Container> gCreat;
 
@@ -53,11 +55,22 @@ int main(int argc, char *argv[]){
 	// print out room for testing purpose
 //	RoomPrintOut();
 
+//	vector<Item>::iterator it = items_arr.begin();
+//
+//	execContainer(*items_arr.begin());
+//	exec2(&(*it));
+
 	gamePlay();
 	return 0;
 }
 
+void execContainer(Item& pC){
+	cout<<"passing iterator----->"<<pC.getName()<<endl;
+}
 
+void exec2(Item * pC){
+	cout<<"passing iterator2=======>"<<pC->getName()<<endl;
+}
 
 /*
  * traverse the child nodes of map, like rooms, items, containers. these are top levels
@@ -290,6 +303,9 @@ void gamePlay(){
 		pair<string, int> feedback = gameUpdate(cur_rm_ind);
 		next_rm_ind = feedback.second;
 		gameStatus = feedback.first;
+
+		// if room changed, clear the available items array
+		if(next_rm_ind != cur_rm_ind) available_items.clear();
 		cur_rm_ind = next_rm_ind;
 	}
 	return;
@@ -361,7 +377,11 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 			feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
 		}
 	}
-	else if(act_n == "take" || act_n == "drop"){
+	else if(act_n == "take"){
+		processItemTD(cur_rm_ind,usr_in);
+		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+	}
+	else if(act_n == "drop"){
 		processItemTD(cur_rm_ind,usr_in);
 		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
 	}
@@ -393,6 +413,7 @@ void processOpen(int cur_rm_id, vector<string> usr_in_vect){
 			vector<string> items=c->getItems();
 			for(int k=0; k<items.size(); k++){
 				string item_n = items[k];
+				available_items.push_back(item_n);
 				cout<<item_n;
 			}
 			cout<<endl;
@@ -474,7 +495,11 @@ void processItemTD(int cur_rm_ind, string usr_in){
 	Room room_obj = rooms_arr[cur_rm_ind];
 
 	if(act_n == "take"){
-		if(items.size() == 0) cout<< "no item found in this room"<<endl;
+		// take items from containers
+		if(available_items.size() != 0){
+			takeAvailableItems();
+		}
+		else if(items.size() == 0) cout<< "no item found in this room"<<endl;
 		else{
 			for(vector<Item>::iterator i=items_arr.begin(); i != items_arr.end(); ++i){
 				if(i->getName() == item_n) {
@@ -493,6 +518,19 @@ void processItemTD(int cur_rm_ind, string usr_in){
 			}
 		}
 		if(item_dropped == false) cout<<"item not in your inventory or item not found"<<endl;
+	}
+}
+
+// take available items from containers
+void takeAvailableItems(){
+	for(vector<string>::iterator it=available_items.begin(); it !=available_items.end(); ++it){
+		for(vector<Item>::iterator i=items_arr.begin(); i != items_arr.end(); ++i){
+			if(i->getName() == *it){
+				i->setOwnerShip("inventory");
+				cout<<"Item "<<*it<<" added to inventory"<<endl;
+				break;
+			}
+		}
 	}
 }
 
