@@ -22,5 +22,6 @@ void processTurnOn(int, vector<string>); // process user input 'turn on'
 void split(const string&, char, vector<string>&); // self defined function to split a string; outputs a vector
 void RoomPrintOut();
 
+// void executeAction(vector<Item>::iterator i);
 
 #endif

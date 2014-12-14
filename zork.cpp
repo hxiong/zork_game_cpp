@@ -353,6 +353,12 @@ void processTurnOn(int cur_rm_ind, vector<string> usr_in_vect){
 			else {
 				cout<<turnon.first<<endl;
 				//TODO executeAction();
+				action_str = turnon.second;
+				vector<string> action_str_vect;
+				split(action_str,' ',action_str_vect);
+
+				if(*(action_str_vect.begin()) == "Update") i->setStatus(*(action_str_vect.end()-1));
+				cout<<"item status now is----->"<<i->getStatus()<<endl;
 				item_on=true;
 			}
 		}
@@ -360,6 +366,11 @@ void processTurnOn(int cur_rm_ind, vector<string> usr_in_vect){
 	if(item_on == false) cout<<"item not in your inventory or there was nothing to printout"<<endl;
 	return;
 }
+
+
+//void executeAction(vector<Item>::iterator i){
+//	cout<<"crazzy shhhhhht"<<endl;
+//}
 
 /*
  * process reading the writing of an item or object
