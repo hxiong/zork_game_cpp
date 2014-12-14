@@ -16,6 +16,10 @@ pair<string,int> gameUpdate(int room_index);
 int findInGivenVector(string);  // find desired room or item, return the index
 bool processOpenExit(int); // process user input 'open exit'
 void processItemTD(int, string); // take or drop item process
+void readItem(int, string); // read writing process
+
+void split(const string&, char, vector<string>&); // self defined function to split a string; outputs a vector
 void RoomPrintOut();
+
 
 #endif

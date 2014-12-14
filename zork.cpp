@@ -9,6 +9,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <functional>
 #include <cstdlib>
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
@@ -314,11 +315,40 @@ pair<string,int> gameUpdate(int cur_rm_ind){
 		processItemTD(cur_rm_ind,usr_in);
 		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
 	}
+	else if(act_n == "read"){
+		readItem(cur_rm_ind, usr_in);
+		feedback.first = "UPDATE"; feedback.second = cur_rm_ind;
+	}
 
 	return feedback;
 }
 
-//TODO assumed one room has one item only
+/*
+ * process reading the writing of an item or object
+ */
+void readItem(int cur_rm_ind, string usr_in){
+	// dissect usr input, get the item name
+	bool item_read=false;
+	string delim = " ";
+	string item_n = usr_in.substr(usr_in.find(delim)+1);  // item name from user
+	string act_n = usr_in.substr(0,usr_in.find(delim));
+
+	for(vector<Item>::iterator i=items_arr.begin(); i != items_arr.end(); ++i){
+		if(i->getName() == item_n && i->getOwnerShip() == "inventory") {
+			if((i->getWriting()).empty()) cout<<"Nothing to print"<<endl;
+			else cout<<i->getWriting()<<endl;
+			item_read=true;
+		}
+	}
+
+	if(item_read == false) cout<<"object not in the player's inventory!"<<endl;
+
+	return;
+}
+
+/*
+ *  process take and drop items
+ */
 void processItemTD(int cur_rm_ind, string usr_in){
 	// dissect usr input, get the item name
 	bool item_dropped=false;
@@ -371,4 +401,19 @@ int findInGivenVector(string label){
 		}
 	}
 	return room_ind;
+}
+
+void split(const string& s, char c,
+           vector<string>& v) {
+   string::size_type i = 0;
+   string::size_type j = s.find(c);
+
+   while (j != string::npos) {
+      v.push_back(s.substr(i, j-i));
+      i = ++j;
+      j = s.find(c, j);
+
+      if (j == string::npos)
+         v.push_back(s.substr(i, s.length()));
+   }
 }
